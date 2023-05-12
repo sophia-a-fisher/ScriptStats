@@ -1,13 +1,21 @@
 /*
-* The Awesomeness Begins
+* DAMAGE REPORT:
+* Translated everything into c++.
+* Compiling fine.
+* Main menu not detecting ints correctly.
 */
 
 #include <iostream>
 #include <string>
 #include "Character.h"
 #include "Script.h"
+#include "ScriptSurfer.h"
 
 int main() {
+
+	ScriptSurfer* mySurfer = new ScriptSurfer();
+	mySurfer->displayIntro();
+	mySurfer->runMainMenuOptions();
 	
 	//Example of getting rid of long syntax references
 	//using namespace std;

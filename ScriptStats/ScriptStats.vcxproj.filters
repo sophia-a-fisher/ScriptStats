@@ -24,12 +24,18 @@
     <ClCompile Include="src\Script.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\ScriptSurfer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Character.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Script.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ScriptSurfer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

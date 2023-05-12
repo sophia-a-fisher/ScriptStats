@@ -130,10 +130,12 @@
     <ClCompile Include="src\Character.cpp" />
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\Script.cpp" />
+    <ClCompile Include="src\ScriptSurfer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Character.h" />
     <ClInclude Include="src\Script.h" />
+    <ClInclude Include="src\ScriptSurfer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
