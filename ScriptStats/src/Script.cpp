@@ -4,51 +4,67 @@
 #include <iomanip>
 #include <sstream>
 #include <algorithm>
+#include <stdlib.h>
+#include <stdio.h>  
 
+
+bool Script::isNumber(const std::string& str)
+{
+    for (char const& c : str) {
+        if (std::isdigit(c) == 0) return false;
+    }
+    return true;
+}
 
 /**
      * Initializing Script Characters, assigning explicit attributes,
      * calculating total wordCounts for each.
      * @param sc Scanner reading script .txt file
      */
-//Script::Script() {
-//    if (sc.hasNextInt()) {
-//        numCharacters = sc.nextInt();
-//        initializeCharacters(sc);
-//        initializeGenders();
-//    }
-//    spoken = true;
-//    Character currentChar = new Character("", "NA");
-//    while (sc.hasNext()) {
-//        String line = sc.nextLine();
-//        //if dialogue being assigned
-//        if (line.contains(":")) {
-//            int colonIndex = line.indexOf(":");
-//            String tempName = line.substring(0, colonIndex);
-//            //if a different character speaking
-//            if (!tempName.equalsIgnoreCase(currentChar.getName())) {
-//                //if character exists
-//                if (containsCharacter(tempName)) {
-//                    currentChar = getCharacter(tempName);
-//                }
-//                //if character is new
-//                else {
-//                    currentChar = new Character(tempName, "NA");
-//                    characters.add(currentChar);
-//                }
-//                currentChar.incrementTimesSpoke();
-//            }
-//            //if same character as before
-//            if (colonIndex + 1 < line.length()) {
-//                currentChar.addWords(countWords(line.substring(colonIndex + 1)));
-//            }
-//        }
-//        else {
-//            currentChar.addWords(countWords(line));
-//        }
-//    }
-//    initializeAverageWordCount();
-//}
+Script::Script(std::fstream &sc) {
+    //TODO confirm this is valid way of checking hasNext
+    std::string line;
+    std::istream& lineSize = std::getline(sc, line);
+
+    if (isNumber(line)) {
+        numCharacters = stoi(line);
+        initializeCharacters(sc);
+        initializeGenders();
+        std::getline(sc, line);
+    }
+    spoken = true;
+    Character* currentChar = new Character("", "NA");
+    while (lineSize) {
+        
+        //if dialogue being assigned
+        if (strchr(line.c_str(), ':') != NULL) {
+            int colonIndex = line.find(":");
+            std::string tempName = line.substr(0, colonIndex);
+            //if a different character speaking
+            if(!(_stricmp(tempName.c_str(), currentChar->getName().c_str()))){
+                //if character exists
+                if (containsCharacter(tempName)) {
+                    currentChar = getCharacter(tempName);
+                }
+                //if character is new
+                else {
+                    currentChar = new Character(tempName, "NA");
+                    characters.push_back(currentChar);
+                }
+                currentChar->incrementTimesSpoke();
+            }
+            //if same character as before
+            if (colonIndex + 1 < line.length()) {
+                currentChar->addWords(countWords(line.substr(colonIndex + 1)));
+            }
+        }
+        else {
+            currentChar->addWords(countWords(line));
+        }
+        std::getline(sc, line);
+    }
+    initializeAverageWordCount();
+}
 
 /**
  * Calculates the average numWords per uninterrupted speech
@@ -97,14 +113,13 @@ Character* Script::getCharacter(std::string name) {
  * @param sc Scanner reading script .txt file
  */
 //TODO fix the Scanner implementation
-void Script::initializeCharacters() {
-    std::cout << std::endl;
+void Script::initializeCharacters(std::fstream &scanner) {
+    std::string nextLine;
+    std::getline(scanner,nextLine);
     for (int i = 0; i < numCharacters; i++) {
-        //if (sc.hasNext()) {
+        while (std::getline(scanner,nextLine)) {
             //splitting name and gender attributes based on ()
-        std::string nextLine;
-        std::cin >> nextLine;
-        //TODO check split is working for the below arguments
+            //TODO check split is working for the below arguments
             std::vector<std::string> attributes = split(nextLine, '(', ')');
             //(s.find('(') != std::string::npos)
             if (attributes.size() > 2 && (attributes[2].find("*") != std::string::npos)) {
@@ -114,7 +129,7 @@ void Script::initializeCharacters() {
                 characters.push_back(new Character(attributes[0], attributes[1]));
             }
 
-        //}
+        }
     }
 }
 
