@@ -20,17 +20,17 @@ int main() {
 	mySurfer->displayIntro();
 	mySurfer->runMainMenuOptions();
 	
-	std::string fileName = mySurfer->promptFileName();
-	std::string myText;
+	//std::string fileName = mySurfer->promptFileName();
+	//std::string myText;
 
-	//// Read from the text file
-	std::ifstream MyReadFile(fileName);
+	////// Read from the text file
+	//std::ifstream MyReadFile(fileName);
 
-	// Use a while loop together with the getline() function to read the file line by line
-	while (getline(MyReadFile, myText)) {
-		// Output the text from the file
-		std::cout << myText;
-	}
+	//// Use a while loop together with the getline() function to read the file line by line
+	//while (getline(MyReadFile, myText)) {
+	//	// Output the text from the file
+	//	std::cout << myText;
+	//}
 
 
 	return 0;

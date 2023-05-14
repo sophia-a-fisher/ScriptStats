@@ -51,7 +51,7 @@ std::ifstream& ScriptSurfer::getFileScannerForNames(std::string fileName) {
     //std::ifstream* sc = &myReadStream;
     // Use a while loop together with the getline() function to read the file line by line
     getline(myReadStream, myText);
-    
+
     try {
         //sc->open(fileName, std::ios::in);
     }

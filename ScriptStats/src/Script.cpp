@@ -134,7 +134,7 @@ void Script::initializeCharacters(std::ifstream& scanner) {
             std::getline(scanner, nextLine);
             //splitting name and gender attributes based on ()
             //TODO check split is working for the below arguments
-            std::vector<std::string> attributes = splitNameFromGender(nextLine, '(', ')');
+            std::vector<std::string> attributes = split(nextLine, '(', ')');
             //(s.find('(') != std::string::npos)
             if (attributes.size() > 2 && (attributes[2].find("*") != std::string::npos)) {
                 characters.push_back(new Character(attributes[0], attributes[1], true));
@@ -214,6 +214,48 @@ std::vector<std::string> Script::splitNameFromGender(std::string str, char sep, 
     return v;
 }
 
+std::vector<std::string> Script::split(std::string str, char sep, char sep2) {
+
+    // declaring vector to store the string after split
+    std::vector<std::string> v;
+    bool doneSplitting = false;
+    int startIndex = 0;
+    int endIndex = 0;
+
+    // Traversing through the string
+    while (!doneSplitting) {
+
+        // Found a delimiter
+        if (str[endIndex] == sep || str[endIndex] == sep2) {
+            // Appending the seperated string to the vector
+            std::string foundSubstring = str.substr(startIndex, endIndex - startIndex);
+            v.push_back(foundSubstring);
+
+            // Updating indexes, starting next search from after found delimiter
+            startIndex = endIndex + 1;
+            endIndex = endIndex + 2;
+
+        }
+        else {
+            // Checking reached the end of the string
+            if (endIndex == str.size() - 1) {
+                std::string foundSubstring = str.substr(startIndex, endIndex - startIndex + 1);
+                v.push_back(foundSubstring);
+                startIndex = endIndex;
+            }
+
+            // Need to consider the next character 
+            endIndex++;
+        }
+
+        // Checking if end of string reached
+        if (startIndex >= str.size()) {
+            doneSplitting = true;
+        }
+    }
+    return v;
+}
+
 /**
  * Returns number of dialogue words in line.
  * Excludes staging marked with <> or [] or () or {}.
@@ -276,9 +318,10 @@ std::string Script::toString() {
         if (!c->getMute()) {
             //Truncating the precision
             std::string avgWordSpoke; 
-            std::stringstream sresult;
-            sresult << c->getAverageWordsSpoke() << std::endl;
-            avgWordSpoke = sresult.str();
+            double result;
+            result = c->getAverageWordsSpoke();
+            // Forcing the doubleResult to floating point precision of 2
+            avgWordSpoke = std::to_string(result).substr(0, std::to_string(result).find(".") + 3);
             r.append(c->getName()).append("(").append(c->getGender())
                 .append(")").append(": ").append(std::to_string(c->getWordCount()))
                 .append(" words, spoke: ").append(std::to_string(c->getTimesSpoke()))
@@ -385,16 +428,16 @@ std::string Script::getGenderSpeechTime(std::string g) {
     double sum = 0;
     int total = 0;
     for (Character* c : characters) {
-        if (_stricmp(c->getGender().c_str(), g.c_str()) && !c->getMute()) {
+        if (_stricmp(c->getGender().c_str(), g.c_str()) == 0 && !c->getMute()) {
             sum += c->getTimesSpoke();
             total++;
         }
     }
     //Truncating the result for displaying, TODO make sure this works!
     double result = (sum / total);
-    std::stringstream sresult;
-    sresult << std::setprecision(2) << result << std::endl;
-    return sresult.str();
+    std::string sresult;
+    sresult = std::to_string(result).substr(0, std::to_string(result).find(".") + 3);
+    return sresult;
 }
 
 /**
@@ -407,16 +450,16 @@ std::string Script::getWordsPerDialogue(std::string g) {
     double sum = 0;
     int total = 0;
     for (Character* c : characters) {
-       if(_stricmp(c->getGender().c_str(), g.c_str()) && !c->getMute()){
+       if(_stricmp(c->getGender().c_str(), g.c_str()) == 0 && !c->getMute()){
             sum += c->getAverageWordsSpoke();
             total++;
         }
     }
     //Truncating the result for displaying, TODO make sure this works!
     double result = (sum / total);
-    std::stringstream sresult;
-    sresult << std::setprecision(2) << result << std::endl;
-    return sresult.str();
+    std::string sresult;
+    sresult = std::to_string(result).substr(0, std::to_string(result).find(".") + 3);
+    return sresult;
 }
 
 /**
@@ -425,7 +468,7 @@ std::string Script::getWordsPerDialogue(std::string g) {
  */
 void Script::mute(std::string name) {
     for (Character* c : characters) {
-        if (_stricmp(c->getName().c_str(), name.c_str())) {
+        if (_stricmp(c->getName().c_str(), name.c_str()) == 0) {
             c->setMute(true);
         }
     }
@@ -437,7 +480,7 @@ void Script::mute(std::string name) {
  */
 void Script::unmute(std::string name) {
     for (Character* c : characters) {
-        if (_stricmp(c->getName().c_str(), name.c_str())) {
+        if (_stricmp(c->getName().c_str(), name.c_str()) == 0) {
             c->setMute(false);
         }
     }
@@ -452,7 +495,7 @@ void Script::unmute(std::string name) {
 int Script::getGenderWordCount(std::string g) {
     int sum = 0;
     for (Character* c : characters) {
-        if(_stricmp(c->getGender().c_str(), g.c_str()) && !c->getMute()){
+        if((_stricmp(c->getGender().c_str(), g.c_str()) == 0) && !c->getMute()){
             sum += c->getWordCount();
         }
     }

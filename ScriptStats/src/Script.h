@@ -25,6 +25,7 @@ private:
     bool containsCharacter(std::string name);
     Character* getCharacter(std::string name);
     std::vector<std::string> splitNameFromGender(std::string str, char sep, char sep2);
+    std::vector<std::string> split(std::string str, char sep, char sep2);
     bool isNumber(const std::string& str);
     bool containsAlpha(std::string str);
     //void initializeCharacters(Scanner sc);
