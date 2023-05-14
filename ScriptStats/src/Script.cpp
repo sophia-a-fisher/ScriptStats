@@ -109,7 +109,7 @@ bool Script::containsCharacter(std::string name) {
 Character* Script::getCharacter(std::string name) {
     for (Character* c : characters) {
         //case insensitive comparison, converting strings to char ptrs
-        if (_stricmp(c->getName().c_str(), name.c_str())) {
+        if (_stricmp(c->getName().c_str(), name.c_str()) == 0) {
             return c;
         }
     }
@@ -277,7 +277,7 @@ std::string Script::toString() {
             //Truncating the precision
             std::string avgWordSpoke; 
             std::stringstream sresult;
-            sresult << std::setprecision(2) << c->getAverageWordsSpoke() << std::endl;
+            sresult << c->getAverageWordsSpoke() << std::endl;
             avgWordSpoke = sresult.str();
             r.append(c->getName()).append("(").append(c->getGender())
                 .append(")").append(": ").append(std::to_string(c->getWordCount()))

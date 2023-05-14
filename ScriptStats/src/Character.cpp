@@ -80,7 +80,10 @@
     /**
      * Calculates average numWords Character spoke per uninterrupted speech.
      */
-    void Character::calcAverageWordsSpoke() { averageWordsSpoke = ((double)wordCount / timesSpoke); }
+    void Character::calcAverageWordsSpoke() { 
+        averageWordsSpoke = ((double)wordCount / timesSpoke); 
+        std::cout << "";
+    }
 
     /**
      * Returns average numWords Character spoke per uninterrupted speech.
