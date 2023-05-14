@@ -378,11 +378,11 @@ int Script::getNumCharacters() {
  */
 void Script::assignGender(std::string name, std::string gender) {
     for (Character* c : characters) {
-       if(_stricmp(c->getName().c_str(), name.c_str())){
+       if(_stricmp(c->getName().c_str(), name.c_str()) == 0){
             c->setGender(gender);
             bool newGender = true;
             for (std::string g : genders) {
-                if(_stricmp(g.c_str(), gender.c_str())) {
+                if(_stricmp(g.c_str(), gender.c_str()) == 0) {
                     newGender = false;
                     break;
                 }

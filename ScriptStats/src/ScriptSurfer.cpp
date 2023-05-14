@@ -267,12 +267,15 @@ void ScriptSurfer::displayMuted(Script* script) {
  */
 void ScriptSurfer::mute(Script* script) {
     std::cout << ("Name: ");
-    std::string name = "";
-    //if (key.hasNext()) {
-       std::cin >> name;
-        script->mute(name);
-    //}
-    std::cout << (name + " successfully muted.");
+
+    std::string name;
+    std::string restOfName;
+    std::cin >> name;
+    getline(std::cin, restOfName);
+    name.append(restOfName);
+    script->mute(name);
+   
+    std::cout << (name + " successfully muted.\n");
 }
 
 /**
@@ -285,12 +288,15 @@ void ScriptSurfer::mute(Script* script) {
  */
 void ScriptSurfer::unmute(Script* script) {
     std::cout << ("Name: ");
-    std::string name = "";
-    //if (key.hasNext()) {
-        std::cin >> name;
-        script->unmute(name);
-    //}
-    std::cout << (name + " successfully muted.");
+
+    std::string name;
+    std::string restOfName;
+    std::cin >> name;
+    getline(std::cin, restOfName);
+    name.append(restOfName);
+
+    script->unmute(name);
+    std::cout << (name + " successfully unmuted.\n");
 }
 
 /**
@@ -327,17 +333,27 @@ void ScriptSurfer::assignAllGen(Script* script) {
  * @param key Scanner connected to the keyboard
  */
 void ScriptSurfer::assignGen(Script* script) {
+    // prompting user to enter name
     std::cout << ("Name: ");
-    //if (key.hasNext()) {
+    
+    // retrieving name
     std::string name;
-    std::cin >> name; 
-       std::cout << ("Gender: ");
-        //if (key.hasNext()) {
-       std::string gen;
-       std::cin >> gen;
-            script->assignGender(name, gen);
-        //}
-    //}
+    std::string restOfName;
+    std::cin >> name;
+    getline(std::cin, restOfName);
+    name.append(restOfName);
+   
+    // prompting user to enter gender
+    std::cout << ("Gender: ");
+        
+    // retrieving gender
+    std::string gen;
+    std::string restOfGen;
+    std::cin >> gen;
+    getline(std::cin, restOfGen);
+    gen.append(restOfGen);
+
+    script->assignGender(name, gen);
 }
 
 /**
