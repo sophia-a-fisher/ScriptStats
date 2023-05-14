@@ -3,10 +3,12 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <filesystem>
 #include "Character.h"
 #include <cstring>
-#include "script.h"
+#include "Script.h"
 #include "ScriptSurfer.h"
+#include <direct.h>
 
 /**
      * Displays text introducing the program.
@@ -14,7 +16,7 @@
 void  ScriptSurfer::displayIntro() {
     std::cout << "\nWelcome to Script Runner, a program designed to give you useful " +
         std::string("data on your script.\nFunctionality includes calculating character word counts, ") +
-        std::string("gender balance statistics, and more.");
+        std::string("gender balance statistics, and more.\n");
 }
 
 /**
@@ -30,6 +32,11 @@ std::string ScriptSurfer::promptFileName() {
     std::cin >> fileName;
         fileName += ".txt";
     //}
+    //getting the current working directory and appending to front
+        char buff[FILENAME_MAX];
+        char* curDir = _getcwd(buff, FILENAME_MAX);
+        std::string dir(curDir);
+        fileName = dir + std::string("\\") + fileName;
     return fileName;
 }
 
@@ -38,10 +45,15 @@ std::string ScriptSurfer::promptFileName() {
  * post: Return a Scanner connected to the file or null
  * if the File does not exist in the current directory.
  */
-std::fstream* ScriptSurfer::getFileScannerForNames(std::string fileName) {
-    std::fstream* sc = nullptr;
+std::ifstream& ScriptSurfer::getFileScannerForNames(std::string fileName) {
+    std::string myText;
+    std::ifstream myReadStream(fileName);
+    //std::ifstream* sc = &myReadStream;
+    // Use a while loop together with the getline() function to read the file line by line
+    getline(myReadStream, myText);
+    
     try {
-        sc->open(fileName, std::ios::out);
+        //sc->open(fileName, std::ios::in);
     }
     //TODO put this back in
     catch (std::exception& e) {
@@ -53,9 +65,9 @@ std::fstream* ScriptSurfer::getFileScannerForNames(std::string fileName) {
         //System.out.println("Be sure " + fileName + " is in this directory: ");
         //System.out.println(currentDir);
         std::cout << ("\nReturning null from method.");
-        sc = nullptr;
+        //sc = nullptr;
     }
-    return sc;
+    return myReadStream;
 }
 
 /**
@@ -96,14 +108,24 @@ int ScriptSurfer::getInt(std::string prompt) {
     }*/
     std::cout << (prompt);
     bool hasInt = false;
-    int nextInt;
+    std::string nextInt;
     std::cin >> nextInt;
+    hasInt = isNumber(nextInt);
     while (!hasInt) {
-        std::cout << ("That was not an int.");
+        std::cout << ("That was not an int.\n\n");
         std::cout << (prompt);
         std::cin >> nextInt;
     }
-    return nextInt;
+    return stoi(nextInt);
+}
+
+bool ScriptSurfer::isNumber(const std::string& str)
+{
+    for (char const& c : str) {
+        if (std::isdigit(c) == 0) return false;
+        if (std::isdigit(c) == 0) return false;
+    }
+    return true;
 }
 
 /**
@@ -122,8 +144,10 @@ void ScriptSurfer::runMainMenuOptions() {
             runDatabaseOptions();
         }
         else if (userChoice == INPUT_SCRIPT) {
-            std::fstream* fileScanner = getFileScannerForNames(promptFileName());
-            Script* script = new Script(*fileScanner);
+            //std::ifstream& fileScanner = getFileScannerForNames(promptFileName());
+            std::ifstream fileScanner;
+            std::string fileName = promptFileName();
+            Script* script = new Script(fileScanner, fileName);
             //fileScanner.close(); //TODO figure out how to close
             runScriptOptions(script);
         }
@@ -157,7 +181,7 @@ void ScriptSurfer::printDisneyOptions() {
         std::string("Lilo and Stitch | Lion King | Little Mermaid | Moana\n") +
         std::string("Mulan | Peter Pan | Pinocchio | Pocahontas | Rescuers\n") +
         std::string("Robin Hood | Sleeping Beauty | Snow White | Tangled\n") +
-        std::string("Tarzan | Zootopia\n");
+        std::string("Tarzan | Zootopia\n\n");
 }
 
 /**
@@ -165,9 +189,15 @@ void ScriptSurfer::printDisneyOptions() {
  */
 void ScriptSurfer::runSpecDatabaseOptions() {
     printDisneyOptions();
-    std::fstream* fileScanner = getFileScannerForNames(promptFileName());
-    Script* script = new Script(*fileScanner);
-    (*fileScanner).close();
+    //TODO below line is not fetching the fstream correctly, not returning the object or closing or something
+    //std::ifstream& fileScanner = getFileScannerForNames(promptFileName());
+    //std::string temp;
+    //fileScanner.open(promptFileName());
+    //getline(fileScanner, temp);
+    std::ifstream fileScanner;
+    std::string fileName = promptFileName();
+    Script* script = new Script(fileScanner, fileName);
+    (fileScanner).close();
     runScriptOptions(script);
 }
 
@@ -315,15 +345,15 @@ void ScriptSurfer::assignGen(Script* script) {
  */
 void ScriptSurfer::showScriptMenu() {
     std::cout << std::endl;
-    std::cout << ("Script Options:");
-    std::cout << ("Enter 1 | display character details.");
-    std::cout << ("Enter 2 | display muted characters.");
-    std::cout << ("Enter 3 | assign a gender.");
-    std::cout << ("Enter 4 | assign all genders.");
-    std::cout << ("Enter 5 | display gender balance.");
-    std::cout << ("Enter 6 | mute a character.");
-    std::cout << ("Enter 7 | un-mute a character.");
-    std::cout << ("Enter 8 | quit to menu.");
+    std::cout << ("Script Options:\n");
+    std::cout << ("Enter 1 | display character details.\n");
+    std::cout << ("Enter 2 | display muted characters.\n");
+    std::cout << ("Enter 3 | assign a gender.\n");
+    std::cout << ("Enter 4 | assign all genders.\n");
+    std::cout << ("Enter 5 | display gender balance.\n");
+    std::cout << ("Enter 6 | mute a character.\n");
+    std::cout << ("Enter 7 | un-mute a character.\n");
+    std::cout << ("Enter 8 | quit to menu.\n");
     std::cout << std::endl;
 }
 
@@ -332,10 +362,10 @@ void ScriptSurfer::showScriptMenu() {
  */
 void ScriptSurfer::showMainMenu() {
     std::cout << std::endl;
-    std::cout << ("Main Menu Options:");
-    std::cout << ("Enter 1 | explore script databases.");
-    std::cout << ("Enter 2 | input custom script.");
-    std::cout << ("Enter 3 | quit.");
+    std::cout << ("Main Menu Options:\n");
+    std::cout << ("Enter 1 | explore script databases.\n");
+    std::cout << ("Enter 2 | input custom script.\n");
+    std::cout << ("Enter 3 | quit.\n");
     std::cout << std::endl;
 }
 
@@ -344,8 +374,8 @@ void ScriptSurfer::showMainMenu() {
  */
 void ScriptSurfer::showDatabaseMenu() {
     std::cout << std::endl;
-    std::cout << ("Database Options:");
-    std::cout << ("Enter 1 | DISNEY.");
-    std::cout << ("Enter 2 | quit to menu.");
+    std::cout << ("Database Options:\n");
+    std::cout << ("Enter 1 | DISNEY.\n");
+    std::cout << ("Enter 2 | quit to menu.\n");
     std::cout << std::endl;
 }

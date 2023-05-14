@@ -24,10 +24,11 @@ private:
     void initializeAverageWordCount();
     bool containsCharacter(std::string name);
     Character* getCharacter(std::string name);
-    std::vector<std::string> split(std::string str, char sep, char sep2);
+    std::vector<std::string> splitNameFromGender(std::string str, char sep, char sep2);
     bool isNumber(const std::string& str);
-    //void initializeCharacters(Scanner sc); TODO check do we not need a parameter?
-    void initializeCharacters(std::fstream &scanner);
+    bool containsAlpha(std::string str);
+    //void initializeCharacters(Scanner sc);
+    void initializeCharacters(std::ifstream& scanner);
     void initializeGenders();
     int countWords(std::string line);
     std::string getGenderSpeechTime(std::string g);
@@ -36,7 +37,7 @@ private:
 public:
 
     //Script(Scanner sc); TODO check do we not need a parameter?
-    Script(std::fstream &sc);
+    Script(std::ifstream& sc, std::string fileName);
     std::string toString();
     std::string displayMuted();
     std::vector<std::string> getNames();

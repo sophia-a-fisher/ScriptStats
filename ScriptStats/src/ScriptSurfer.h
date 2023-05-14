@@ -28,7 +28,7 @@ class ScriptSurfer {
 public:
     void displayIntro();
     std::string promptFileName();
-    std::fstream* getFileScannerForNames(std::string fileName);
+    std::ifstream& getFileScannerForNames(std::string fileName);
      int getChoice();
      int getInt(std::string prompt);
      void runMainMenuOptions();
@@ -50,5 +50,8 @@ public:
     std::string displayDatabaseChoices[2];
     std::string displayMainMenuChoices[3];
     std::string displayScriptMenuChoices[8];
+
+private:
+    bool isNumber(const std::string& str);
 
 };

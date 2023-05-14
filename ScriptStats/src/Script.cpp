@@ -21,27 +21,35 @@ bool Script::isNumber(const std::string& str)
      * calculating total wordCounts for each.
      * @param sc Scanner reading script .txt file
      */
-Script::Script(std::fstream &sc) {
-    //TODO confirm this is valid way of checking hasNext
+Script::Script(std::ifstream& sc, std::string fileName) {
+
+    // Opening the file
+    sc.open(fileName);
+
     std::string line;
     std::istream& lineSize = std::getline(sc, line);
+    bool endOfFile = sc.peek() == EOF;
 
     if (isNumber(line)) {
         numCharacters = stoi(line);
         initializeCharacters(sc);
         initializeGenders();
-        std::getline(sc, line);
+        //std::getline(sc, line);
     }
     spoken = true;
     Character* currentChar = new Character("", "NA");
-    while (lineSize) {
+    while (!endOfFile) {
+
+        // TODO below line never updates to end of file, stuck in infinite loop
+        std::istream& lineSize = std::getline(sc, line);
+        endOfFile = sc.peek() == EOF;
         
         //if dialogue being assigned
         if (strchr(line.c_str(), ':') != NULL) {
             int colonIndex = line.find(":");
             std::string tempName = line.substr(0, colonIndex);
-            //if a different character speaking
-            if(!(_stricmp(tempName.c_str(), currentChar->getName().c_str()))){
+            //if a different character speaking, checking different string from previous (weirdly _stricmp returns false if equal)
+            if((_stricmp(tempName.c_str(), currentChar->getName().c_str()))){
                 //if character exists
                 if (containsCharacter(tempName)) {
                     currentChar = getCharacter(tempName);
@@ -55,13 +63,15 @@ Script::Script(std::fstream &sc) {
             }
             //if same character as before
             if (colonIndex + 1 < line.length()) {
+                //TODO this line is not working, 8:24
                 currentChar->addWords(countWords(line.substr(colonIndex + 1)));
             }
         }
         else {
+            //TODO this line is not working, 8:24
             currentChar->addWords(countWords(line));
         }
-        std::getline(sc, line);
+        
     }
     initializeAverageWordCount();
 }
@@ -84,7 +94,7 @@ void Script::initializeAverageWordCount() {
 bool Script::containsCharacter(std::string name) {
     for (Character* c : characters) {
         //case insensitive comparison, converting strings to char ptrs
-        if (_stricmp(c->getName().c_str(), name.c_str())) {
+        if (_stricmp(c->getName().c_str(), name.c_str()) != 0) {
             return true;
         }
     }
@@ -113,14 +123,18 @@ Character* Script::getCharacter(std::string name) {
  * @param sc Scanner reading script .txt file
  */
 //TODO fix the Scanner implementation
-void Script::initializeCharacters(std::fstream &scanner) {
+void Script::initializeCharacters(std::ifstream& scanner) {
     std::string nextLine;
-    std::getline(scanner,nextLine);
+    //int characterNum = 0;
+    //std::getline(scanner,nextLine);
     for (int i = 0; i < numCharacters; i++) {
-        while (std::getline(scanner,nextLine)) {
+        //std::getline(scanner, nextLine);
+        //while (nextLine != "") {
+            // Retrieving the nextLine of text
+            std::getline(scanner, nextLine);
             //splitting name and gender attributes based on ()
             //TODO check split is working for the below arguments
-            std::vector<std::string> attributes = split(nextLine, '(', ')');
+            std::vector<std::string> attributes = splitNameFromGender(nextLine, '(', ')');
             //(s.find('(') != std::string::npos)
             if (attributes.size() > 2 && (attributes[2].find("*") != std::string::npos)) {
                 characters.push_back(new Character(attributes[0], attributes[1], true));
@@ -128,8 +142,8 @@ void Script::initializeCharacters(std::fstream &scanner) {
             else {
                 characters.push_back(new Character(attributes[0], attributes[1]));
             }
-
-        }
+            
+        //}
     }
 }
 
@@ -142,7 +156,7 @@ void Script::initializeGenders() {
         bool newGender = true;
         for (std::string g : genders) {
             //case insensitive comparison, converting strings to char ptrs
-            if (_stricmp(g.c_str(), c->getGender().c_str())) {
+            if (_stricmp(g.c_str(), c->getGender().c_str()) == 0) {
                 newGender = false;
                 break;
             }
@@ -154,22 +168,49 @@ void Script::initializeGenders() {
     }
 }
 
-std::vector<std::string> Script::split(std::string str, char sep, char sep2) {
+bool Script::containsAlpha(std::string str)
+{
+    for (char c: str) {
+        if ((c <= 'Z' && c >= 'A') || (c <= 'z' && c >= 'a')) {
+            return true;
+        }   
+    }
+    return false;
+}
+
+std::vector<std::string> Script::splitNameFromGender(std::string str, char sep, char sep2) {
 
     // variable to store token obtained from the original
-    std::string s;
+    //std::string s;
 
-    // constructing stream from the string
-    std::stringstream ss(str);
+    //// constructing stream from the string
+    //std::stringstream ss(str);
+    //std::stringstream ssCopy(str);
 
     // declaring vector to store the string after split
     std::vector<std::string> v;
 
-    // using while loop to deliminate
-    while (getline(ss, s, sep) or getline(ss, s, sep2)) {
-        // store token string in the vector
-        v.push_back(s);
-    }
+    int positionOpeningPar = str.find(sep);
+    int positionClosingPar = str.find(sep2);
+    std::string name = str.substr(0, positionOpeningPar);
+    std::string gender = str.substr(positionOpeningPar+1, 1);
+    v.push_back(name);
+    v.push_back(gender);
+
+    /*std::stringstream stringStream(str);
+    std::string line;
+    while (std::getline(stringStream, line))
+    {
+        std::size_t prev = 0, pos;
+        while ((pos = line.find_first_of(" ';", prev)) != std::string::npos)
+        {
+            if (pos > prev)
+                v.push_back(line.substr(prev, pos - prev));
+            prev = pos + 1;
+        }
+        if (prev < line.length())
+            v.push_back(line.substr(prev, std::string::npos));
+    }*/
     return v;
 }
 
@@ -179,14 +220,33 @@ std::vector<std::string> Script::split(std::string str, char sep, char sep2) {
  * @param line Script line in question
  * @return number dialogue words in line
  */
+//TODO this function is not working!!! 8:24 PM
 int Script::countWords(std::string line) {
+    
+    // prepartion for splitting
+    std::string word;
+    std::vector <std::string> text;
+
+    // constructing stream from the string
+    std::stringstream ss(line);
+
+    //TODO write a generic method to split string based on one delimiter and based on two
     //splits using whitespace
-    std::vector <std::string> text = split(line, ' ', ' ');
+    while (getline(ss, word, ' ')) {
+
+        // checking word is not empty, workaround for the bad split function
+        if (word != "") {
+            text.push_back(word);
+        }
+    }
+
     int count = 0;
     //checking each word is valid dialogue
     for (std::string s : text) {
-        bool containsOneAlphabet = std::any_of(std::begin(s), std::end(s), ::isalpha);
-        if (strcmp(s.c_str(), "")) {
+        // TODO below line causing debug failure MOST RECENTLY 
+        bool containsOneAlphabet = containsAlpha(s);
+        // FIXXME below line not necessary anymore now we are checking in above while loop
+        if (strcmp(s.c_str(), "") == 0) {
             continue;
         }
         //TODO check this is a valid substitute for contains
