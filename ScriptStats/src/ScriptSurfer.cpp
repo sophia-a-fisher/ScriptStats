@@ -318,11 +318,15 @@ void ScriptSurfer::assignAllGen(Script* script) {
     std::vector<std::string> names = script->getNames();
     for (std::string n : names) {
         std::cout << ("Gender of " + n + ": ");
-        //if (key.hasNext()) {
+        
+        // retrieving gender
         std::string gen;
+        std::string restOfGen;
         std::cin >> gen;
-            script->assignGender(n, gen);
-        //}
+        getline(std::cin, restOfGen);
+        gen.append(restOfGen);
+
+        script->assignGender(n, gen);
     }
 }
 
