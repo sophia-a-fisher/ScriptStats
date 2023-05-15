@@ -1,6 +1,6 @@
 3
 Snow White(F)
-Buzzard(M)
+Buzzard(M)*
 Betty(F)
 
 Snow White:

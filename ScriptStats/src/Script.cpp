@@ -237,15 +237,15 @@ std::vector<std::string> Script::split(std::string str, char sep, char sep2) {
 
         }
         else {
-            // Checking reached the end of the string
-            if (endIndex == str.size() - 1) {
-                std::string foundSubstring = str.substr(startIndex, endIndex - startIndex + 1);
-                v.push_back(foundSubstring);
-                startIndex = endIndex;
-            }
-
             // Need to consider the next character 
             endIndex++;
+        }
+
+        // Checking reached the end of the string
+        if (endIndex > str.size() - 1 && startIndex <= str.size() - 1) {
+            std::string foundSubstring = str.substr(startIndex, endIndex - startIndex + 1);
+            v.push_back(foundSubstring);
+            startIndex = endIndex;
         }
 
         // Checking if end of string reached
